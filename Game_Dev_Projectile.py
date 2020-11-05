@@ -20,7 +20,7 @@ img_folder = os.path.join(game_folder, "img")
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load(os.path.join(img_folder, "p1_jump.png")).convert()
+        self.image = pygame.image.load(os.path.join(img_folder, "alien_guy.png")).convert()
         self.image.set_colorkey(black)
         self.rect = self.image.get_rect()
         self.rect.center = (width / 2, height / 2)
@@ -32,7 +32,7 @@ class Player(pygame.sprite.Sprite):
         self.rect.centerx = width / 2
         self.rect.bottom = height - 10
         self.speedx = 0
-        #self.shield = 100
+        
         self.shoot_delay = 250
         self.last_shot = pygame.time.get_ticks()
 
@@ -40,9 +40,9 @@ class Player(pygame.sprite.Sprite):
         now = pygame.time.get_ticks()
         if now - self.last_shot > self.shoot_delay:
             self.last_shot = now
-            bullet = Bullet(self.rect.centerx, self.rect.top)
+            bullet = Bullet(self.rect.right, self.rect.centery)
             all_sprites.add(bullet)
-            #bullets.add(bullet)
+            bullets.add(bullet)
             #shoot_sound.play()
                 
         
@@ -81,9 +81,9 @@ class Player(pygame.sprite.Sprite):
 class Platform(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load(os.path.join(img_folder, "sandwich.png")).convert()
+        self.image = pygame.image.load(os.path.join(img_folder, "sandwich.jpg")).convert()
         self.image = pygame.transform.scale(self.image, (300, 175))
-        self.image.set_colorkey(black)
+        self.image.set_colorkey(white)
         self.rect = self.image.get_rect()
         self.rect.x = 400
         self.rect.y = 460
@@ -105,20 +105,22 @@ class Bullet(pygame.sprite.Sprite):
 
         
         self.rect = self.image.get_rect()
-        self.rect.bottom = y
+        self.rect.centery = y
         self.rect.centerx = x
-        self.speedy = -10
+        self.speedx = 10
 
     def update(self):
-        self.rect.y += self.speedy
-        if self.rect.bottom < 0:
+        self.rect.x += self.speedx
+        if self.rect.left > width:
             self.kill()
 
-        hits = pygame.sprite.groupcollide(platinum, Bullet, True, True)
+        hits = pygame.sprite.groupcollide(temp, bullets, True, True)
         for hit in hits:
-            score += 50 - hit.radius
+            '''score += 50 - hit.radius
             expl = Explosion(hit.rect.center, 'lg')
-            all_sprites.add(expl)
+            all_sprites.add(expl)'''
+            print("pew")
+            
         
 
             
@@ -132,11 +134,16 @@ clock = pygame.time.Clock()
 print("Initial Variables")
 #Sprite Group
 all_sprites = pygame.sprite.Group()
+temp = pygame.sprite.Group()
 player = Player()
 platinum = Platform()
 all_sprites.add(player)
 all_sprites.add(platinum)
+temp.add(platinum)
 print("Sprite Group")
+
+bullets = pygame.sprite.Group()
+
 
 #Game Loops:
 #Process Events
@@ -165,6 +172,5 @@ while running:
     #draw.shield_bar(screen, 5, 5, player.shield)
     #Flip after drawing
     pygame.display.flip()
-    print("Mine!")
+    
 pygame.quit()
-
