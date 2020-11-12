@@ -2,9 +2,11 @@ import pygame
 import random
 import os
 
-width = 800
-height = 600
+width = 1800
+height = 800
 fps = 30
+
+
 
 #Colors
 white = (255,255,255)
@@ -16,23 +18,30 @@ green = (0, 255, 0)
 game_folder = os.path.dirname(__file__)
 img_folder = os.path.join(game_folder, "img")
 
+
+
 #Player Class
 class Player(pygame.sprite.Sprite):
     def __init__(self):
+
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load(os.path.join(img_folder, "alien_guy.png")).convert()
-        self.image.set_colorkey(black)
+        self.image = pygame.image.load(os.path.join(img_folder, "playeridle.png")).convert()
+        self.image.set_colorkey(white)
         self.rect = self.image.get_rect()
         self.rect.center = (width / 2, height / 2)
         self.y_speed = 8
         self.radius = 20
         print("Player Init")
 
+
+
+
+
         #pygame.draw.circle(self.image, white, self.rect.center, self
         self.rect.centerx = width / 2
         self.rect.bottom = height - 10
         self.speedx = 0
-        
+        #self.shield = 100
         self.shoot_delay = 250
         self.last_shot = pygame.time.get_ticks()
 
@@ -53,18 +62,33 @@ class Player(pygame.sprite.Sprite):
         keystate = pygame.key.get_pressed()
 
         #Checks to see which keys were in the list(a.k.a pressed)
-        if keystate[pygame.K_RIGHT]:
-            self.rect.x += 5
-            print("Right")
-        if keystate[pygame.K_LEFT]:
-            self.rect.x += -5
-            print("Left")
-        if keystate[pygame.K_UP]:
-            self.rect.y += -5
-            print("Up")
-        if keystate[pygame.K_DOWN]:
-            self.rect.y += 5
-            print("Down")
+        running = True
+        if running == True:
+            if keystate[pygame.K_RIGHT]:
+                self.rect.x += 5
+                self.image = pygame.image.load(os.path.join(img_folder, "playerright.png")).convert()
+                self.image.set_colorkey(white)
+                print("Right")
+            elif keystate[pygame.K_LEFT]:
+                self.rect.x += -5
+                self.image = pygame.image.load(os.path.join(img_folder, "playerleft.png")).convert()
+                self.image.set_colorkey(white)
+                print("Left")
+            elif keystate[pygame.K_UP]:
+                self.rect.y += -5
+                self.image = pygame.image.load(os.path.join(img_folder, "playerup.png")).convert()
+                self.image.set_colorkey(white)
+                print("Up")
+            elif keystate[pygame.K_DOWN]:
+                self.rect.y += 5
+                self.image = pygame.image.load(os.path.join(img_folder, "playerdown.png")).convert()
+                self.image.set_colorkey(white)
+                print("Down")
+            else:
+                self.image = pygame.image.load(os.path.join(img_folder, "playeridle.png")).convert()
+                self.image.set_colorkey(white)
+            
+
 
         if keystate[pygame.K_SPACE]:
             self.shoot()
@@ -81,9 +105,9 @@ class Player(pygame.sprite.Sprite):
 class Platform(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load(os.path.join(img_folder, "sandwich.jpg")).convert()
+        self.image = pygame.image.load(os.path.join(img_folder, "sandwich.png")).convert()
         self.image = pygame.transform.scale(self.image, (300, 175))
-        self.image.set_colorkey(white)
+        self.image.set_colorkey(black)
         self.rect = self.image.get_rect()
         self.rect.x = 400
         self.rect.y = 460
@@ -100,13 +124,14 @@ class Bullet(pygame.sprite.Sprite):
     def __init__(self,x,y):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load(os.path.join(img_folder, "bullet_img.gif"))
-        self.image.set_colorkey(black)
-        self.image.set_colorkey(yellow)
+        
+        self.image.set_colorkey(white)
+        
 
         
         self.rect = self.image.get_rect()
         self.rect.centery = y
-        self.rect.centerx = x
+        self.rect.left = x
         self.speedx = 10
 
     def update(self):
@@ -114,14 +139,12 @@ class Bullet(pygame.sprite.Sprite):
         if self.rect.left > width:
             self.kill()
 
-        hits = pygame.sprite.groupcollide(temp, bullets, True, True)
+    ''' hits = pygame.sprite.groupcollide(bullets, Bullet, True, True)
         for hit in hits:
-            '''score += 50 - hit.radius
+            score += 50 - hit.radius
             expl = Explosion(hit.rect.center, 'lg')
-            all_sprites.add(expl)'''
-            print("pew")
-            
-        
+            all_sprites.add(expl)
+        '''
 
             
 #Initialize Variables
@@ -134,16 +157,15 @@ clock = pygame.time.Clock()
 print("Initial Variables")
 #Sprite Group
 all_sprites = pygame.sprite.Group()
-temp = pygame.sprite.Group()
+bullets = pygame.sprite.Group()
 player = Player()
 platinum = Platform()
 all_sprites.add(player)
 all_sprites.add(platinum)
-temp.add(platinum)
+bullets.add(platinum)
+
+
 print("Sprite Group")
-
-bullets = pygame.sprite.Group()
-
 
 #Game Loops:
 #Process Events
@@ -172,5 +194,7 @@ while running:
     #draw.shield_bar(screen, 5, 5, player.shield)
     #Flip after drawing
     pygame.display.flip()
-    
+    print("Mine!")
 pygame.quit()
+
+
